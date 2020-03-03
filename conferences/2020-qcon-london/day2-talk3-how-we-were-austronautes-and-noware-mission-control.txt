@@ -1,0 +1,127 @@
+how we went from being austronaus to being mission control
+
+managing systems in a age of dynamic complexity -- Laura Nolan
+
+# intro
+    co-author of the "the sre book" from google
+    senior staff at slack
+
+# All cloud providers have outages
+    even with full hardcore designs to be fault tolerant to full DC failures, they sometimes have large failures.
+
+    on the other side, a single lowly server, with 4-5y uptimes are not unheard off.
+
+# The old ways
+     configuration by hand
+     load-balancer backend pools statically config
+     no auto scaling
+     ...
+
+# Times have changed
+     Automate everything
+     job orchestration
+     autoscaling
+     routing, failover, balancing traffic
+
+     We have largely succeeded
+
+# other pressures
+    better perf and latency, focus on tail latency
+    reduce toil of managing systems
+    react faster to failure
+    consistent prod (infra as code, no pet systems)
+    reduce compliance risks related to humans accessing prod
+
+# Dynamic control pane architecture pattern
+    basic:
+        a service pool (emits signals)
+        a signal aggregator
+        a controller (reads signals), acts on the service pool
+
+    This is a very common pattern, this is a basic autoscaler, or HPA or whatnot.
+    this is now a core part of your prod system, don't keep this in "janky python"
+
+
+    Now you can also have:
+    a global controller ontop of a multiple set of basic ones that are in distinct DCs or zones..
+    For example a global DNS loadbalancer
+        you can now deal with inbalanced systems and even out the load.
+
+    Another example is Google's global Sw-defined network used for batch/bulk.
+        there is a global optmizer and bandwith broker
+        it receives metrics from zone-local collectors of metrics
+        it acts on Traffic-Engineering servers on each zone
+
+# This is just not automation
+    This is mission-critical systems.
+    This is the automatic operator of the critical systems.
+    "We don't run our systems, these systems run our systems"
+
+    We loose "direct observation" and "mechanical sympathy" with these systems.
+
+# Now lets talk about Control Plane Failures
+    - December 24, 2012, AWS Elastic LB
+    See: https://aws.amazon.com/message/680587
+    accidental deletion of state
+    Full recovery took 24h
+    Post incident action item was: lock down write access to the ELB control plane state
+
+    Operators need mental model of:
+        - how the system works
+        - how the automation system works
+    So, this is 4x harder to do.
+
+    - April 11, 2016, GCE
+    See: https://status.cloud.google.com/incident/compute/16007
+    Full network outage
+    This was a propagation of a IP Anycast that is busted.
+    only when the propagation reached the last good system, the outage starts.
+    so, lack of signals/metrics that things are about to go bad.
+
+    Multiple network control planes that interacted poorly:
+        - canary system
+        - control plane using it
+        - delayed propagation of changes w/ delayed sideeffects
+    Classic complex systems failure involving multible bugs and latent problems
+
+    Testing these systems are a real challenge.
+
+    - June 2, 2019: Google network outage
+     elevated packet loss for 4h25m
+     See: https://status.cloud.google.com/incident/cloud-networking/19009
+
+     Maintenances are common and automated.
+     This is the "usual work" of a network system.
+
+     this is another case of multiple bad things happening, time to detection was fast.
+     time to repair was high becaue the network was in the shit, the global state was damaged with the full outage.
+
+        There was loss a global state that didn't have a "checkpoint" system or similar.
+     (I remember reading this one, and it was a very nasty one..)
+
+
+# Learnings
+    Testing failsafe or fail static behaviour is scary.
+    We're adverse to "fail" systems to run on failsafe just for normal operation.
+    (Imagine if they did, and caused a global outage..exaclty because of a bug on the failsafe..)
+
+    Use regional or zonal control systems.
+    Avoid global systems
+    Reduce blast radius
+    Test your control planes really really hard.
+
+    Plan for time needed for operators to stay familiar with the underlying operations.
+    no matter how much automation, you need a disaster recovery plan, you need to EXERCISE your plans.
+    We need DRILLS.
+    (added by me: Main lisbon's hospital runs every saturday on the power generators to ensure it can run without main power)
+    they DRILL IT WEEKLY!!
+
+    SOMETIMES HUMANS ARE BETTER
+        it is good to not fully automate some things.
+        build tools, but do they need ZERO intervention?
+
+    Make all your control systems to log into the same place.
+        they are working independently, but we need to understand the sequence of events and relate them if needed.
+
+    Have a "KILL SWITCH", consider a "switch to manual"
+

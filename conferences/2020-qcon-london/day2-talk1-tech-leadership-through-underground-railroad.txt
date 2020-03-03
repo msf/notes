@@ -1,0 +1,32 @@
+This talk was focussed on using stories about the Underground Railroad and reinterpret them as tech leadership/management lessons.
+
+Underground Railroad: US (circa 1850) underground movement to free southern slaves and move them to the free north.
+
+# Leadership Lesson 1
+  Prepare your incentives before you need them.
+  This forces you to think about what are the right incentives for your team.
+
+# Leadership Lesson 2
+  Bold Actions set the Tone
+
+  Examples on how to "fix" quickly a org/team problem by setting the tone with a bold action.
+  Example: "standup meetings that are sit-downs that take >40mins" -> removed the chairs from the meeting room to trigger a change.
+
+# Leadership Lesson 3
+  Don't let your experience bias You.
+
+  Don't do things that you are very confortable with but might:
+    - not be the best for the team/project
+    - unfamiliar and 'risky' or hard to your team/project
+
+# Leadership Lesson 4
+  Embrace Continuous Solving
+
+  Don't frett about repeat problems or re-ocurrences, that is just garanteed to happen.
+  Keep "solving" them and repeat the solving exercise..
+
+# Leadership Lesson 5
+  You're a Leader of Leaders
+
+  Be confortable letting the team take on the problems and create solutions
+

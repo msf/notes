@@ -1,0 +1,175 @@
+This is by Martin Thomson, he gave a first talk at Qcon 10y ago.
+
+# Intro
+10y they could do 100k Tx /sec with 1ms latency
+
+these systems are fantastically good and expert systems at low latency high throughput systems.
+They run on bare metal, and usually try to colocate w/ the stock exchanges, or as close possible.
+
+Currently best exchanges do under 100 microsecs of latency!
+
+Evolution around:
+    - design
+    - resilience
+    - performance
+    - deployment
+
+
+# Design
+    state machines:
+    input * state -> state
+    input * state -> output
+
+    replicated state machines
+        - ordered inputs
+        - deterministic execution
+        - same state & outputs
+
+    ends up building:
+        Distributed Event Log
+
+        many event sourcing systems fail because they aren't done very formally
+
+    We also use: Rich Domain Models (DDDs)
+        Data Structures to relate data and DDDs many developments around building specific DStructures.
+
+    Time & Timers are also a problem area that needs to be well controlled and very well tought out.
+    Many times atomic clocks and hw time-stamping of network packets are involved
+
+    If there are timers, you have to put that in the event-log so that these things are applied deterministically around all replicas.
+    If you have microsec timestamps, thats 1million events per sec on the log.
+
+    Fairness:
+        operating in a rigged game, market makers, exchanges using customer orders and front-ordering their own orders.
+        if there are gateways to the exchange, you can check which is faster, and use the best one all the time.
+        you can also "stuff" other gateways to slow them down to reduce competition.
+        If there's a single GW, no more fooling around gaming the speed of it.
+
+        So now:
+            - single gateway
+            - multiple matching engines (different engines)
+                - sharding by asset classes or similar
+
+    Migration by Asset Class
+    OTC > Exchange Traded (no idea what these things are)
+
+
+# Resilience
+    How do we deal with Fault-Tolerance.
+    10y ago: Primary + Secondary
+        basically, the flawed split brain problem..
+        conversations with layers about Fault-Tolerance, layers can't accept working on "secondary", no redudancy left.
+
+    Consensus
+        evidently they are now adopting consensus systems (funny to these guys 10-15y behind Goog/Amzn)
+        But many are still using primary + secondary, giving silly excuses.
+
+    Lamport - Paxos
+    Barbara Liskov - Viewstamp Replication
+    Ken Birman - Virtual Synchrony
+
+    .. and then a slide on RAFT
+    RAFT is revolutionizing by having a more approachable paper and new implementations popping up.
+
+    - Election Safety
+    - Leader Append-Only
+    - Log Matching
+    - Leader Completeness
+    - State Machine Safety
+
+    So, they are using RAFT now and now follows a simple description of RAFT.
+    for a single consensus module, there is a leader, clients connect to it.
+    Distributed Log, now each node holds
+        - append index
+        - commit index, the known quorum appended
+        - service index, the "DB/application" applied index
+
+    Now he's talking about leader re-election due to a fault and how to avoid the former leader (still thinking it is the leader) from causing issues.
+
+    Importance of Code Quality & Model Fidelity
+    - They are probably now carefully ensuring model-checking and validate fidelity to the formal proof.
+
+
+    Robustness is another approach to Resiliency
+        How to make the software robust to cope with bad input, or other errors.
+        Example: unhandled exceptions or errors.
+
+# Performance
+    This was the highlight 10y.
+
+    Now: latency distribution awakening.
+    We used to track averages, some still do (dinosaurs!) but now full latency histograms, percentile latencies..etc
+
+    systemic & queueing events
+        - GC pauses
+        - SSD block reallocation on the FLT layer
+
+    How to work well on a small burst of 10microsecs, at market start, market end, or special unpredictable events.
+
+    Batching and amortization is important (you cannot have linear correlation between input events and IO for example)
+
+    Garbage Collectors: a whole adventure story of which to use, tuning them, "operating" them, etc..
+        Now the C4-GC from ZuulVM (?) is the leading one now.
+
+    Memory Access Patterns & Data Structures
+        evaluating them and studying cache misses matter.
+        controlling memory dependent access and loads are important, Memory ordering and cache alignment is important.
+        the fastest matching engines are in C because of the control of the memory layout
+
+    Binary Codecs: the finance events are a text-based format.
+        the writting is now on the wall, they are now moving to binary protocols.
+        "its human readable" -> "no, it's a tooling problem, that's what it is"
+
+    Spectre & Meltdown
+        big perf impact and mess.
+        huge costs increase
+        a now game that is going on is: which patches can I *NOT* apply ?
+
+    Greatly increased cost for syscalls, page faults and context-switching.
+        they are seeing higher overheads here and are now more aware of minimizing OS-overhead.
+        Hugepages, NUMA is also an important problem.
+
+    Advances in Hardware
+        SSDs impacted the game for sure, they were a game changer.
+        Optane is also a win, not as big as thought, but better at predictability, tail latency.
+        Networking: advanced hugely..
+        CPUs: not much faster, minimal improvements in latency for the services.
+        So, in summary: huge improvements in throughput, but flat on latency
+
+    New IO APIs
+        BSD sockets have run their course.
+        io_uring on Linux..
+        if io is 1microsec -> your ceiling is 1Million/secs
+
+    Mechanical Sympathy
+        align with hardware
+
+    Does programming language matter?
+        not so much the language but more the culture around the language.
+        for example: Java APIs hurt performance due to too many Allocations and lack of thought about that.
+        C++ and Rust are good choices (no surprises)
+
+        Now there are more polyglot systems: some parts in some lang, some parts in others.
+
+# Deployments
+    Continuous Delivery
+        Secret to that is automation
+
+    Agile?
+        I don't care about standups or not
+        the key is feedback cycles
+
+    Move to 24*7 Operations
+        rolling deployments, snapshots of DBs..
+
+    Flexible Scaling
+        Can you use your deployment tools to deploy the whole stack on your laptop?
+        HW loadbalancer, HW this-that is no longer a good idea because they hurt for these approaches.
+        "What used to take a whole rack you can put in a single server".
+        So now there is more IPC and new APIs for that change, easy to get boxes with 100 cores.
+
+# What will the next 10 years hold?
+    More reactive.
+
+    "the future is already here, it is just not evenly distributed" -- william gibson
+
