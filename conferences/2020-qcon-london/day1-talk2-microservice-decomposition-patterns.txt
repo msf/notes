@@ -1,0 +1,112 @@
+# Author of "Monolith to Microservices" (O'reilly book)
+
+# What is Microservices, what is Monolith?
+- Independent deployability is extremelly valuable.
+- Monolith is the new word for "legacy"
+- Monolith is:
+  - all code packaged into a single packaged unit
+  - all data in single DB
+
+# Types of Monolith ?
+We then have a "modular" monolith.. still bundled and monolithic deployments.
+  - problem is humans aren't very disciplined at designing/maintaining module boundaries.
+
+Another variation is:
+  - Modular Monolith but with modular DB model too.
+      - easier to migrate to microservices (or to fully decouple a module later..)
+  - different teams working on different modules
+
+Another variation is: The distributed Monolith
+  - many binaries, services, databases.
+  - biz-logic is coupled and crosses service boundaries
+  - some features/workstream require a lots of coordination because of boundary crossing
+
+  - high cost of change
+  - large scoped deployments
+  - more to go wrong
+  - release co-ordination
+  - full on distributed system -> 10x worse off
+
+
+A KEY BENEFIT IS: INDEPENDENT DEPLOYABILITY FOR EACH TEAM.
+    having "release trains" is a anti-pattern.
+    they are remedial step before you can have Continuous Delivery.
+
+# How to break down a Monolith
+A key step to reducing and breaking down a monolith (me: lets read legacy, should apply to "u-services" too)
+    is to START WITH DOMAIN DRIVEN DESIGN.
+        obtain DAG of dependencies.
+        -- you now can more easily extract the LEAFs of the DAG.
+    (me: major benefit is properly grasping the dependencies and coupling of modules,
+        so, you can refactor your design by evaluating the DAG and addressing problems it is showing)
+
+# Microservices Should Not Be The Default Choice
+
+"Nobody got fired for buying IBM"
+"Microservices are good, lets use Microservices"
+
+What problems are you trying to solve?
+
+"You won't appreciate the true horror, pain and suffering of microservices until you're running them in production"
+The hard part of it is running it in prod.
+
+"If you do a big bang rewrite, the only thing you get is a big bang" -- Martin Fowler
+
+We need patterns for incremental change
+
+# Strangler Fig Pattern
+1. Identify functionality to move to a new uservice
+2. Redirect calls to new service (move functionality)
+    It might be copy & paste (this means you're in a nice place, becuase the cause is clean to copy out)
+    It is probably to be a re-write or refactor.
+
+    If you can redirect at HTTP level, that's A GREAT APPROACH, numerous HTTP proxies can help you.
+    1. You leave the old code on the monolith, you don't remove it.
+    1. you just redirect transparently to the new service.
+    1. if you have problems, you redirect back to the old system.
+
+# Branch By Abstraction
+1. Same as before
+2. Create an abstraction point (create a call-site)
+  1. it still uses the current code, it is just a facade/API for it.
+3. Create a new service
+  3.1 client code on the monolith implements the abstraction point
+  3.2 implementation is a separate service
+4. Now you put a FREAKIN FEATURE FLAG ON IT
+5. Clean up the old code.
+  5.1: remove the FLAG
+  5.2: delete old code
+
+-- "Working Effectivly with Legacy Code" - Feathers (Michael)
+
+# Parallel Run
+1. Same as before
+2. Same as before
+3. Same as before
+4. CALL BOTH
+5. Compare the results
+ 5.1 error rates?
+ 5.2 latencies? throughput ?
+ 5.3 careful with side effects (only 1 response to the "outside" world)
+
+ GITHUB has code forthis: github.com/github/scientist
+ also other implementations in other languages.
+
+# Separating Deployment from Releasing
+  A lot of the problems of "single deployment" is problems due to releases changed behavoir
+  You can de-risk deployments if you decouple the release of the changed behaviour.
+  Look into progressive delivery (and release flags ?)
+
+# What about Data Access (access the DB is needed?)
+ Avoid sharing databases.
+
+ Expose data in the monolith though direct APIs
+
+ When you have a new owner for the data (the new service)
+ you need to move the data over.
+ what about JOINS?
+    You need to do the JOINs on the application tier.
+    This can create massive latency problems.
+    What used to be a single RTT to the DB is now:
+        2 DB RTTs (in serial) and 1 RTT between the services
+

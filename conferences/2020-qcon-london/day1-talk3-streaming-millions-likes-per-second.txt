@@ -1,0 +1,94 @@
+This is a story about a real-time platform to have many many ppl interact direclty on live videos.
+
+So, how do you distribute "likes" and other comments to the viewers in real time?
+
+# Challenge 1: The delivery pipe
+
+Doing a like is on a simple HTTP req.
+this goes:
+1. user
+2. likes backend (publish)
+3. streaming service
+4. the receiver.. with a long lived conection to the streaming svc.
+HTTP/1.1 and long-poll with server side events.
+
+    GET / HTTP/1.1
+    Content-Type: text/event-stream
+
+On the client side, this is "EventSource(url)"
+
+# Challenge 2: Connection Management
+They use Akka actors
+each actor has:
+- a mailbox (variable sized fifo)
+- 1 co-routine
+
+There is a supervisor actor that knows the actors that are handling real clients.
+- the publish is done on the supervisor...
+
+# Challenge 3: Multiple Live Videos
+Me: they need just a pubsub.
+clients send a "subscribe(video-id)"
+    there is in-memory subscriptions table where this is tracked.
+        connection-id, video-id
+Supervisor consults this table and selects the child-actors that need to receive
+
+# Challenge 4: 10k concurrent viewers
+A dispatcher pushes to all frontend servers.
+    they created a different pub/sub to know what subscriptions to which video-id, per frontend.
+    so: video-id, frontend-id,subscription-count (only > 0 counts)
+
+# Challenge 5: 100 likes/second
+add more dispatchers.
+Now the pub/sub table must be outside the dispatchers and be shared, so a KV-store.
+
+# Challenge 6: 100 Likes/s, 10000 viewers -> 1M likes/second
+
+Subscription flow:
+1. User subscribes to frontend-node (http)
+1. Frontend subscribes to dispatchers (http)
+1. dispatcher updates the KV-store
+
+Publish flow:
+1. User likes (http)
+1. publish-system is notified (http)
+1. dispatchers are notified (http)
+1. frontends are notified (http)
+1. users are notified (http)
+
+# Challenge 7: LinkedIn adds a new Datacenter.
+
+Publish flow (consumer of like is in different DC)
+1. User likes
+1. publish system is notified
+    1.1 No local-subscribers (local KV-store has zero subscribers)
+    1.2 Dispatch to all peer dispatchers in all DCs
+1. Dispatcher on DC-3 is notified
+1. like before
+1. like before
+
+# Challenge 8: How many persistent connections per Frontend (100k)
+
+This is because frontends do more than just this service
+For a 18M viewers show, 180 machines are enough..
+
+They have a blog post about this.
+
+# Challenge 9: How many events/second on Dispatchers ?
+
+5K events per second, we can publish 50k likes per sec to frontend nodes
+with 10 dispatcher machines.
+the key part here is the fan-out of dispatcher to frontend notifications.
+a single event can have 180 fanout
+
+# Challenge 10: Publish Latency?
+P90 of 75ms
+There are:
++3 network hops: receiving FE to publish system, dispatcher to KV, dispatcher to FE..
+Samza Aeon: tiny.cc/linkedinlatency
+
+# Challenge 11: Presence detection and propagation.
+
+they leveraged Akka framework to track presence of users.
+(very clever and clean way .. don't re-doit, the akka system has to do that work anyways)
+

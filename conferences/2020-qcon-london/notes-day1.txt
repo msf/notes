@@ -1,0 +1,69 @@
+INTRO- 1st TALK
+
+52 talks per day
+
+1 track:
+    - 6 talks,
+    - 1 experience/ama/panel talk
+
+6 tracks
+1 ama track
+2 sponsored tracks
+
+10-1 attendee ratio
+
+Open Space:
+    open space to propose a topic and have a debate around it with other attendees
+
+
+
+# Next Gen Microservices -
+ - Decomposition Patterns
+ - Dist systems are hard
+ - Beyond Distributed Monoligh, reach the big data
+ - Monitoring, keeping track of a Mixed State
+
+# Streaming Data Architectures -
+ - Scalable Cloud Arch, internet of tomatoes, IoT
+ - Streaming milling likes/second, server to client streaming.
+ - Databases and stream processing: future of consolidations.
+    should probably go
+ - From Batch to Streaming to Both
+ - ML through streaming at Lyft
+
+# Driving Full Cycle Engineering Teams at Every Level
+  - Strong Eng. Culture
+  - Operating on what you build
+  - Scaling teams
+  - Journey to Better Quality
+  - Developer Effectiveness, optimizing feedback loops
+
+# When things go Wrong: GDPR, Ethics, Politics
+  - Climate change & Tech
+  - Generative Culture
+  - Mental Wellbeing in Tech (clinical psychologist)
+  - When All the Things Go Wrong (very bad things)
+  - DevOps is more complex and harder than you think
+
+# Modern CS in the Real Wourld
+ - Infinite Parallel Universes: States at the Edge
+  - Peter Bourgon (should go)
+ - Coccinelle: 10y of automated evol of the linux kernel
+ - Record, Replay, Rinse & Repeat: rebuilding Programmetic State
+ - Cloudstate: Towards stateful Serverless
+ - Kafka: Modern Distributed System
+ - Applying AI/ML for Trusted Commerce (facebook)
+
+# Javascript track:
+ - a bunch of stuff on JS, I won't follow it closely, but JS is extremely important for our world.
+ - Bangle.js: smart watch w/ js
+ - Running 3rd-party JS
+ - Node.js serverless apps into prod.
+ - ...
+
+# Speaker AMAs
+  - .. two tracks
+  - won't attend.. for now I think
+
+
+

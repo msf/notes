@@ -1,0 +1,116 @@
+From batch to streaming to both to streaming ... again?
+
+# From the Data Platform Tribe at Skyscanner (Herman Schaaf, Principal Eng)
+
+# Where does the money come from ?
+
+Messages per secon through the data platform.
+.. at 2019.. > 2 Million / sec
+172 Billion events per day.
+
+They also have a OLAP DB, nicknamed "the cube" :-)
+They didn't wanna wait 24h for the ETL cycle to complete.
+
+# From Batch to Streaming
+they started with Kafka streams
+- protobuf messages (all events in protobuf, they really recommend going with something like that)
+- we can then consume and split out into:
+ - metrics to OpenTSDB/Grafana
+ - business events to S3
+ - logs to elastic search
+
+So:
+- decoupled on the event emission
+- coupled on the processing ofthe events
+
+The ended up having servers connected to kafka too and "apache samza"
+So, kafka became their "Single Unified Log"
+
+.. they were quite happy with this..
+... but now we need to have some type of transformations on the events..
+
+With Samza, they could very quickly get Stream Processors up and running.
+
+# some experiences with Kafka in prod.
+they discovered that putting a frontend on front of kafka they protected the kafka cluster from "chatter" around metadata of publishers or subscribers coming and going with deployments/rollouts..
+Also, they could *enforce* their conventions about kafka events.
+So, "having a HTTP proxy to front their Kafka was a really good move"
+
+# Failure because of Success
+So, ppl are using them, they have ~300k events/sec
+
+A mushrooming of Samza jobs meant a single event would have a throughput amplification of pretty much 5x or similar due to SPs.
+and then they needed extra logic to DEDUP events.
+
+# Conways law
+The full business logic of the agregated stream processing they had, didn't have a clear owner.
+Squads and Tribes would have local scope and understanding and create small samza jobs for their goals.
+But lack of global understanding.
+
+# Lets talk about metadata
+
+- There was no schema repository.
+- there was a convention on topic names.
+    <prod|sandbox|dev>.<service>.<event-name>.<schema>.<message>
+ Types of metadata:
+  - descriptive
+    what does it mean? owner? contains? comes from?
+  - structural
+    how does it relate? how is it sorted? how is organized ?
+  - administrative
+    how far back do we have this?
+    update frequency ?
+    how large?
+    how complete?
+
+    they missed the administrative type of metadata.
+    they missed relationships
+
+Lesson 2:
+ - metadata is critical
+ - especially relationships,
+ - automated please
+ - from the start please
+ - Schema Registries are just a start
+
+# Lesson 3:
+ Kafka topics and events weren't managed enough.. it became hairy, similar to spagettig code problems.
+ (reference to the movie Primer and trying to follow the plot)
+ The solution was to have the Data Engineers design the data streams and Events.
+ (reference to 12 angry man)
+ (reference xkcd #657)
+
+# more problems:
+   Issues wth Samza jobs and bugs and halts
+
+They started to make the API server besides sending to kafka do also:
+ - send biz-events to kinesis-> flink -> S3 (and also to a data catalog)
+ - do data transformations on S3 and register these transformations on the data catalog
+
+# Lesson 4:
+ REPEATABILITY is IMPORTANT
+  - streams must choose between replays and accept errrors as permanent
+  - replays can be complicated
+  - batch processing can be done again anytime
+  - going straight to the archive in small batches get benefits of both.
+
+# Is this Lambda Architecture?
+   (not about aws lambda or lambda functions)
+  this is a system with two "output" flows:
+    - a stream side (kafka, samza, cassandra) (under 60secs)
+    - a batch side (hadoop, athena, impala)   (under 300secs)
+
+    They use very small batches and the latency is quite low (5mins or low)
+
+# Delta Lake
+This is basically (delta.io) a hybrid system that has both stream and batch input and output flows
+
+
+# Key lessons:
+- conways law
+- metadata is critical
+- data eng control the plot line
+- repeatability is important
+- delta lake + structured streaming
+    can bring the benefits of streaming to batch
+

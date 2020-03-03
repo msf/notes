@@ -1,0 +1,123 @@
+Tim Berglund
+
+This is about "KAFKA" boyz...
+
+He works for Confluent, they work on Kafka.
+
+This is going to be a primer on how kafka works:
+- replication
+- leader election
+- consumer groups
+
+# Kafka Basics
+- Topics
+This is NOT a queue, this is a LOG, a distributed log. This is an append only file..
+- Events are KV-pairs. (K is a partition key, not an event-id)
+- Events are persistent and have a lifetime of the topic config.
+- Logs have Partitions
+    - an event gets put on a partition, we use consistent-hashing to map the key onto a partition.
+    - no guarantee of global ordering, no need for that (very good rationale, use a 1-partition topic, reduce data-size to fit)
+- Brokers hold partitions.
+    they are leaders for some partitions
+    they are followers on some others
+- There is a replication factor for partitions (default is 3?)
+- Partition Replication:
+    - there is a 1 leader out of all the replicas.
+    - writes/reads go to the leader
+    - the others are just redundancy
+- Producers: they just write to topics, its a client app
+- Consumers: they read from topics.
+    - consuming doesn't delete the message/event.
+    - consumer-groups are scaled out consumers, they are a single group, they divide/shard the topic reading.
+    - there are some thorny consumer-group coordination problems, which is why kafka streams exist..
+        you need some logic to do a stateful consumption of topics across many partitions for an application group
+- Controller: foundational piece.
+    - writes go to the leader
+    - followers ask the leader for new writes
+    - reads always* come from the leader
+        * at some release introduces an assynchronous follower (observer) and you can have a consumer on an observer
+    - producer ack is tunable (is it when leader writes to disk? when others do?..)
+    - consumer can only READ fully replicated data
+
+# what is the controller ?
+    - it is broker, (first one to come up, by default)
+    - monitor all the other brokers
+    - coordinates partition leader election on broker failover
+        single, global coordinator for all partition leaders.
+
+- Electing a controller
+    - /controller path in Zookeeper
+    when a broker boots it writes metadata into that path/file/node
+    first write wins
+    the node/file/path is alive while session is alive
+    When the controler dies (or hangs), session expires and the next broker in line becomes the leader
+
+- Controlled Shutdown
+    SIG_TERM to the broker
+    broker tells the controller : going down
+    Controler kicks off leader-election for each partition this broker is the leader.
+
+- Broker failure:
+    controller initiates the shutdown when broker fails (heartbeats?)
+
+- Replication Basics:
+ - Log is a sequence of records
+ - we replicate each log
+ - 1 leader, N-1 followers
+ - followers query for new records
+
+- In-Sync Replicas (ISR)
+    replicas are in sync if they are within N messages or T seconds behind.
+    by default, in sync if up to 10secs behind.
+    only ISRs are eligible replicas for leader election
+
+- Replication Basics again:
+    ZK knows leader, the epoch and the ISR list
+    the leader knows High Water Mark (HWM), this is the largest LSN that is common to all ISRs
+    (event horizon of "durable records")
+    Messages are readable if their LSN <= HWM.
+
+- Scenario:
+    - 3 replicas, 1 producer, 1 consumer
+    - (and now a bit of acting w/ ppl on stage)
+    - on connect and write to topic the broker you connect will provide:
+        - metadata and partitions of the topic
+        - and then for a single write a partition is selected
+        - the endpoint for the leader is provided so client can write to it.
+    - leader acks messages and assigns an OFFSET to each msg.
+        offsets are monotonically increasing
+    - followers ask leader for msgs
+        followers write down the msg and offsets
+    - consumers connect, bootstrap broker will provide partitions for topic and leader for partition
+    - consumer can only get msgs with offset <= HWM
+
+- Consumer Groups
+    Assign partitions automatically as consumers enter and leave groups
+    Clients decide partition assingment (brokers are stupid)
+    Scale to 10^4 groups and 10^2 consumers per group.
+    Strongly consistent
+
+    - Consumers in group
+    - every broker acts as a controler, 1 controller per group
+    - FindCoordinator
+    - JoinGroup
+    - SyncGroup
+    - Leave? (lost slide)
+- New story on consumer groups, this is tricky to eep up the notes with explanation.
+    group id is the application id
+    there is a _consumer_offsets topic keyed by group-id, this means there is a leader for a partition for this key group-id
+    the leader when sees the first consumer assigns him the leader role to that group-id.
+    SyncGroup(group-id, member-id, group-assignments) -- group is now bootstrapped
+    this guy will decide wwhich consumers are reading which partitions.
+    this consumer must heartbeat to the broker partition leader
+
+    now a new consumer for that group wakes up.
+    finds the leader broker for that secret topic consumption group.
+    bootstrapped and ready to consume
+    can't read yet..
+    when leader consumer heartbeats, is told about other consumer for that group.
+    leader consumer now rebalances partitions across consumers
+    finally consumer-2 starts to find records to consume
+
+
+

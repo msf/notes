@@ -1,0 +1,26 @@
+
+Internet of Things miht have less internet than we thought?
+
+"Think or Thick" cloud architectures.
+
+ML systems have a nice split:
+ - development and then deployment.
+
+ There is a shift of inference into the edge and run the models close to the client.
+
+
+ 7% of companies acknowledge getting value/return from their data science or data-lakes projects.
+
+ "You're being watched. Are you okay with that?"
+
+ lots of problems of privacy, security and even compliance w/ law on IoT stuff and "smart gadgets" like roombas, mobile apps, etc..
+ software & services of modern tools/assets are still property and owned by the company, not the owner.
+ so lots of problems of "accidental" failure due to parent co. stop servicing old products.
+
+ Exposure of the industry failings in regards to change their approach to privacy, security, failure modes, ownership, abandonware.
+ the line of argument is that more enclaving and isolation is going to be a necessary direction as we mature our
+ tech world.
+
+ The final part is: how moving the models and the code to the edge and making it "self hosted" at the edge.
+    massive perf difference, requires TPUs or similar though, aaannd.. quantization of models of course.
+

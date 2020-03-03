@@ -1,0 +1,59 @@
+INTRO- 1st TALK
+
+52 talks per day
+
+1 track:
+    - 6 talks,
+    - 2 experience/ama/panel talk
+
+
+# Architectures you always wondered about
+    - Evolution of Financial Exchange Arch
+    - Managed Systems in the Age of Dynamic Complexity
+    - Lessons from DAZN: Scaling your Project with Micro-Frontends
+    - Rethinking the Linux Kernel
+    - Tesla Virtual Power Plant
+    - Designing a Real-Time Global Sportsbook (from scratch!)
+
+# Building High Performing Teams
+    - My Team is High Performing But Everyone hates us
+    - How to Debug your Team
+    - Trust, the secret ingredient in High Performing Team
+    - How t Supercharge a Team with Delegation
+    - The good, bad, ugly: making teams perform better
+    - Optimise for Time
+
+# Machine Learning: The latest innovations
+    - Accuracy as a Failure
+    - Visual intro into Machine Learning and Deep Learning
+    - BERT for Sentiment Analysis on Sustainability Reporting
+    - Fast track to AI wi JS and serverlerss
+    - Speeding up ML Development with MLFlow
+    - ML Open Space
+
+# Future of the API: REST, gRPC, GraphQL and More
+    - Brief History of the Future of the API
+    - Future of Cloud Native API Gateways
+    - Moving beyond request-reply, how Smart APIs are different
+    - Next Gen Client APIs in Envoy Mobile
+    - Introducing and Scaling a GraphQL BFF
+    - Panel: how to make the Future your Present
+
+# Modern Compilation Targets
+    - The modern Platform in 2020
+    - TornadoVM: Java for GPUs and FPGAs
+    - Build your own WebAssembly Compiler
+    - Tiny Go: Small is Going Big
+    - Pony, Types and GC
+    - Modern Compilation Targets Open Space
+
+# Bare Knuckle Performance
+    - Quarkus: new Java stack
+    - Does Java need Inline Types? Project Valhala
+    - Perf vs New Features: doesn't have to be zero-sum
+    - GraalVM: maximizing perf with GraalVM
+    - Understanding CPU uarch to increase perf
+    - Perf Open Space
+
+# Speaker AMAs:
+    - a bunch of them..

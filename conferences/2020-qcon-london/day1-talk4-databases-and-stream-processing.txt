@@ -1,0 +1,99 @@
+A future of consolidation.
+
+By Ben Stopford, office of the CTO, Confluent (the company that maintains Kafka)
+
+# Software is Eating the World
+
+- Weak form: companies are using more software
+- Strong form: companies are BECOMING software
+ We automate the business process away.
+
+ For the weak form you create 3-tier systems: UI + APP-LOGIC + DB
+
+ For the strong from you have: APP + APP... + APP ..
+
+ Compare requesting a ride now to "calling to book a taxi ride"
+
+ "the users of software are going to be more software."
+
+# What about DBs ?
+ Fundamental assumption is that data is PASSIVE.
+
+ Stream databases have a non-static approach
+ You have a stream processor.
+
+ On conventional DB, data is PASSIVE, the query is ACTIVE.
+
+ On even Streams:
+ the data is ACTIVE, the query is PASSIVE
+
+# Streams or Tables ?
+ Event: records the fact that something happened
+  good was sold, a payment was made..etc..
+
+ Events are stage CHANGES, not STATE
+  they carry intent or actions
+
+ Stream is an exact recording of something it happened in the past.
+ A table is your current state
+
+ Stream: immutable, append-only (event has an offset)
+
+ Tables: Mutable, Primary Key (row has a pk)
+
+# Stream-Processors have tables too
+ They input from streams and output to streams
+ But internally use tables
+
+ Stream processors are similar to a materialized view in a DB
+  m-views are synchrounous and are "poll-based"
+  streams are async and push-based
+
+# What about Join?
+  Joining a stream w/ a table..
+   ... straight forward, we enrich the Event, that's it.
+
+  Joining two streams:
+   because systems are async, related events can arrive out of order.
+   The Stream-proc must buffer the stream changes.
+   When all related events are present in a local-state, can a new event be created that represents the join.
+   We need an upper bound on the buffer, lets put an upper bound on:
+    - TIME, using a time-window
+    - some session/correlation-id,start-window,end-window events
+
+# How does this work?
+ - SPs have some materialized-views (tables)
+ - data-partition the streams and SPs, you must partition on same thing so that related events are processed by the same SP.
+ - Broadcast data, creating a global table in practice.
+
+# there is possibly a unified model of DBs.
+  1. allow for active and passive data
+  1. allow for active and passive queries
+
+Standard Query:
+- all the past until now
+Standard Stream Query:
+- from now onto forever
+
+Dashboard Query:
+- from the past until now
+- and carry on updating it in through the future
+
+# Imagine the future.
+
+Normal queries and also: "Push Query":
+> SELECT * from orders where value_ammount > k PUSH CHANGES
+
+Pipelines: keep triggering and pushing events, and reacting downstream..
+
+# Variants:
+
+Most stream systems have SPs and are programming frameworks.
+  - storm, flink, kafka streams.
+Active Databases:
+ - mongo, Couchbase, rethinkdb
+
+
+
+
+
