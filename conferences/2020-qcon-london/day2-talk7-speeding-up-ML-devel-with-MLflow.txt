@@ -1,0 +1,136 @@
+Speeding up machine learning development with MLflow
+
+He works on the AI platform team at LinkedIn.
+
+# Agenda:
+ - unique challenges
+ - ml platform tour
+ - intro of MLflow
+   - demo
+
+# Development Process Overview
+   paper: hidden tech debt in ML systems (paper from Goog)
+
+   we've seen this picture at Unbabel, the 90% of the work for ML is infra-tooling, 10% is ML code
+   configs, data collection, data verification, hw resource mgmt, serving infra, monitoring , etc..
+
+   This is the story of Software 2.0
+   Instead of data driven -> Model driven.
+
+   Sw-devel vs Model-devel
+   Goal:
+    sw: meet requirements
+    model: optimize biz metrics (for us MQM)
+   Quality:
+    sw: depends on code
+    model: depends on data, code, algo, parameters
+   Tool:
+    sw: standard sw stack
+    ...
+    lost slide.
+
+
+    Development dimensions are also different:
+    - there is an experimentation dimension
+     this is scientific endeavor
+
+     the experimentation dimension is what we currently do as a normal practice.
+     this is the work we did for example, to get generic tickets models for transformers for EN-DE.
+
+     Model training is done offline, and then inferencing is done online.
+
+     As your data scales, training costs and time increases polinimially.
+     you need tooling for your training systems.
+
+     ML Platform Tour:
+      you need a whole process and culture.
+
+    Separation of concerns:
+    scientists and ML platform.
+
+    Something common among sw-base and model-base is HABILITY TO ITERATE QUICKLY
+
+# Some platforms that exist out there.
+    - FBLearner
+    - Michelangelo
+    - Google TFX
+    -
+
+    common functionalities:
+     - feature infra
+     - model training
+     - model management
+     - model running
+     - ... lost slide
+     - model monitoring
+
+
+    "major pain points associated with ML project dramatically changes as the scale of the project increases"
+
+    the cloud ones provide pretrained models
+
+
+    ML Services:
+    a layer above infra, that sits on top of k8s, pytorch, gpus, caffe, tensorflow, etc..
+    ML ID, experimentation, training management, monitoring
+
+
+# MLFLOW
+    Open Source ML platform.
+
+    principles:
+     - open
+     - ease of use
+     - extensible
+     - scalable
+    (too many principles, trying to cover everything..)
+
+    manage the ML lifecycle, including experimentation, reproducibility and ..
+
+    What does it give you:
+    - tracking
+    - project
+    - model
+    - model registry
+
+    Tracking
+        record and query experiments, code, configs, results, etc..
+        .. pic of excell sheet to track experiments.. (it's the wild west..)
+
+    .. so it includes:
+     - kv parameters
+     - metrics
+     - artifcats
+     - source code (git url + commit hash..)
+     - version
+     - tags and notes
+    ... connects to notebooks, apps, cloudjobs etc..  w/ APIs
+
+    it holds the artifacts and metadata
+
+    (now he is demoing the UI for running experiments for a project)
+    now he is showing the code used for this, it is basic python normal code,
+    with a few code changes to run the experiment with a `with mlflow.start_run(...) as run: ...`
+    and some extra statements to log some details into the run, like run.with_model("name of the model", filepath)
+
+    Models
+        general format to describe the model
+        this helps the problem of deployment the model
+
+        You can just an API call to register the models that were created.
+        metadata is in yaml.
+
+        this metadata includes a "closure" of the code used to create this model, so this code can be used to run it.
+
+    Model Registry
+        this is to track sharing, versioning, approval
+        centralized activity los and coments.
+        can be integrated with CI/CD
+        model administration and management.
+
+    Model Serving
+        It also has a command line to serve a given model
+        this is to make it very easy to run models
+
+    This talk wasn't very interesting, I don't understand how it is "scalable" or how to extend it
+

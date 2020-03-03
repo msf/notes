@@ -1,0 +1,56 @@
+This talk is pun on the tweetstorm that followed when Monzo twitted about their 1500 microservices running in production.
+
+"How can you possibly know what's going on?"
+
+But more seriously: "what would be an appropriate number of services?"
+
+So this panel is about for different companies, how do they view their services in operation and "how many" they have or consider.
+
+Represented are:
+- Finantial Times
+    they have a massive zoo of prog. langs and tools, "if you considered it, we run it"
+    they don't have a company-wide polity or normalization attempt, there some checks and balances but for specific things and is about risk.
+    They do have a catalog of all services (or products?) and the count there is ~150.
+    They run lambdas, containers, servers, VMs,... the whole panoply.
+    They do ask: "do you genuinely deploy these over here separately?"
+    There is independence, FT the website, 5y ago would have 12 releases a year. Nowadays they have 40k releases a year.
+        they know this because they have a "changes" api to track their changes to FT.
+        They now use a continuous delivery approach, short lived branches and small changes.
+
+- Monzo
+    they have a single language: Go, shared tools. They have >1500 microservices.
+    their recommended sweet spot is: if this a specific domain entity and operations on it and a natural bounded context.
+        this is a good microservice and is deployed independently and scaled independently.
+    they have a common FS-tree structure, a single framework and tooling around for their systems.
+    "golden path" approach, free metrics, free structured logging, free distributed tracing.
+        one can get a new service up and running with a DB-entities and APIs in production in 2hours or so.
+    Significant tooling for locating, deploying, learning about code-owners or codebase, or metrics.
+    They also have a monorepo. So all deployments are tracked in a single repository
+
+    A question that does come up: what should be converted into a library ?
+        For that to happen, we're adding another layer of metrics and expertize.
+        We only want to create libraries after writting a given thing a few times to learn about the right APIs it should have.
+
+    What about all the overheads of all the network hops ?
+        big chat about you also don't control latency traits of IO-paths or GC-pauses or other things that can impact your latency
+        so we don't hide that there might be a bit more overhead, but
+
+
+- SkyScanner
+    Around 2Million msg/s
+
+    At this scale, you have to innovate and your past experience "breaks".
+
+    This is not about conventional microservices but more about how you try to "flatten" the amount of 'steps' on processing work.
+
+    also on the metrics is not about the microservices or the events, it is about trends and outliers.
+    The monitoring needs to evolve to track the health of the system in a probabilistic fashion.
+    They've broken "AWS" a few times due to running ~4k containers on ECS just for their logs.. for example.
+        very proud that AWS uses them as a "test" account due to their volume, given they've broken AWS systems before.
+
+    (between Monzo and SkyScanner there's a bit of flaunting and "posing", the FT engineer is more gracious and "wise",
+     not trying to show off)
+
+    Now they're talking about cascading failures due to surges in load knocking 1 region at a time.
+
+Now there's a QA session

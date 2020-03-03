@@ -1,0 +1,95 @@
+BERT for sentiment analysis on Sustainability Reports
+
+This is from KPMG, they have a sustainable "things" team or something.
+
+# The problem
+    different ppl have diff opinions on the expressed sentiment.
+    very time consuming to find problematic examples.
+    there is also no good comparison we can make.
+
+# Can we quantify the balance?
+    --> SENTIMENT ANALYSIS!
+
+    We tried a LOT of them, different models, comertial:
+        Heaven on demand
+        Rosetta
+        text-processor.com
+      Open source:
+        Stanford Sentiment Treebank
+        Textblob
+      Self-Traind:
+        tf RNN model
+
+    They didn't really work well because of the data used for their training.
+    They used "www.menti.com" to do annotations/classification of data for their reports.
+
+    they had to normalize how to rank the sentiment. Also negative sentiment on public reports is written in "positive" way
+        (we will see improvements on.., new opportunities, or challenges on..)
+
+# BERT
+    Lets start simple
+    Vector representations
+        one hot encoding for a matrix bit, 1 bit per word of a long vector of works
+
+    Word2Vec models: variation of an auto encoder.
+        NN, structure of an hourglass. You try to predict the input itself.
+
+    Word2Vec doesn't work for words w/ multiple meanings (river bank, hsbc bank)
+    Sequence models: predict based on sequence of words
+        basically: RNN
+
+    BERT:
+        Masked Language Modelling (MLM)
+        try to predict a word by masking that word, capturing the context of everything around it.
+        .. she's going quite fast, something about CLS tokens and how they are important for classification..
+
+        They use BERT, with the output that into their own classifier model.
+        BERTbase and BERTlarge
+
+        tinyBERT
+        ALBERT
+        RoBERT
+        CamemBERT
+
+        pytorch, keras, hugging face, ..
+
+# Finetuning BERT for their data
+    ~800 sustainability reports
+    aprox 90 pages each
+    extract all data and split into sentences.
+    didn't do stemming nor lematization
+
+    They don't like tensorflow and ended up building some code on Keras
+    this was before tf-2.0
+
+    ~8000 labelled sentences
+    2days labelled by humans
+    Negative sentiment: only 3%, Positive: 21%, Neutral: 76%
+
+# Results
+Accuracy: 82%
+    Negative: 71%
+    Positive: 80%
+    Neutral: 94%
+
+    it never conflicted neutral with positive, so it was only on adjacent labels
+
+    BERT was able to correctly predict negative sentences that humans didn't spot.
+
+# Back to the problem
+    the analists don't always agree and cant consistently evaluate reports.
+    But BERT was consistent with them and seems to have better consistency than humans.
+    This means bulk sentiment analsysis is now easy to do on the reports.
+
+# Demo
+    PDF parser
+    POS tags
+    Named Entities
+    Sentiment (highlighted color on sentences)
+    Report overview, with topics (probably tf/idf)
+
+
+.. this was a very fast talk, and she skimmed a lot over important bits.
+ My interpretation: this was a very good execution and very smart team, but it was so fast I don't understand the "insight" or learnings.
+
+ NOTE TO SELF: when you do talks, think about what is the LEARNING for your audience

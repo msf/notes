@@ -1,0 +1,155 @@
+This talk is special
+no recording
+no slide sharing
+
+This was secret stuff until now.
+
+# the electric grid is the amazing and beautiful
+
+ prepared speech about how the grid is 20century tech and things are about to change.
+
+ software is key, and now we can create virtual powerplants by using batteries scattered around homes.
+
+ Software is key to clean energy future.
+
+ evolution of the test power plant.
+
+ cloud iot platforms.
+
+ they are not speaking in behalf of tesla, just about their personal experiences.
+
+# How does the grid work ?
+
+ demand and supply must be balanced (all the way to the second?).
+ Generation can't be totally controlled on renewables.
+ In new world a lot of micro-generators (home solar)
+ this means higher inbalances between power generation and demand.
+
+ Batteries can be used to SOAK the inbalance.
+ So.. lets use home batteries.
+
+ Lets walk through the 4 sections of evolution of this .
+
+ 1. Tesla Energy platform
+ 2. Single batt market participation
+ 3. peak shaving virtual power plant
+ 4. market partication virtual power plant.
+
+# Tesla Energy Platform
+ Description of the tesla power wall product.
+ firstly the domestic product.
+ then the industrial one (they also have a tesla battery for this)
+
+    So basically these things have:
+    - IoT Sensors and controllers
+    - Edge Computing Platform (runs linux)
+    - and it talks to the cloud
+
+Layers:
+  IoT devices
+  websocket/PKI
+  kafka + PubSub services
+  Kafka Topics -> cannonicalization and scrubbing/enriching into specific topics.
+
+  (StreamProcesses read these topics and put them in the data stores..)
+  InfluxDB .. || PgSQL .. || PgSQL ..
+  Telemetry, Alerts, Events || Assets & Auth || Command and Control
+         Applications
+
+  They use akka and akka streams, the only thing the user writes are functions.
+  They also use alpakka, they use it to.
+  They use Scala as a prog. language, they have become big fans of Scala for
+  large scale distributed systems with IoTs
+  They run their stuff on Kubernetes, Akka + K8s are a very good pairing, they're very happy with it.
+  they also are now fans of gRPC now.
+
+  "Constraints Liberate, Liberties Constrain" -- some dude
+
+  Principles of Reactive Systems and Reactive Streams.
+
+  a toolkit for distributed computing:
+   state, distribution, streaming
+
+  They're a "strict types" camp.
+  Invest in your toolset.
+
+# A Single Battery Market Participation (100MW?)
+
+  The goal of market participation is to respond to load demand *instantanously*.
+
+  So this is controlled by software: "AutoBidder" is the name of their system.
+  This is built in the applications layer of the platform that was described above.
+
+  This is a workload orchestration platform.
+    input: market data
+        orchestrator -> (forecasting and otimization services are used by it)
+    output: bid service -> market API
+
+    the forecasting and optimization engines are in python (pythorch or what?)
+
+    all the RPCs happen with gRPC (on input/out of orchestrator).
+
+    communication to the forecasting and optimization use: AWS SQS (each has 1 input + 1 output queues)
+    so, they have multiple python workers looking at the queues
+
+
+    Business logic is using immutable facts:
+        - fetchData, telemetry + market data
+        - forecast,
+        - optimize
+    ... they snapshot the state so they cnan resume.
+    full decoupling of logic and state, all logic is in pure functions.
+    the akka framework is managing the snapshotting and the state movement.
+
+    decouple workflow state (actors)
+    from business logic (...)
+
+# Peak Shaving Virtual Power Plant
+
+  Peak shaving is: you bid and buy excess energy generation instead of "dumping it".
+  Note: California doesn't do cross-state energy trading because they don't want "federal laws" butting in.
+  So even bigger incentive to do this in california.
+
+  How do we control thousands of Powerwalls?
+   only the ones that subscribed to this "virtual power plant" thingie, not all of them.
+
+  They do hierchical aggregations of multiple batteries by geographical boundaies or similar.
+  .. this is recursive... all the way to a single node/cell. (a tree or dag)
+  each node off the tree is a Akka actor.
+    it holds some state (like charge state)
+    the tree edges are done through messages between actors.
+
+  They are in varying states of charge, some offline (intermittent fault? network?), etc..
+
+  Management of uncertainty must be implemented into biz logic.
+
+  They have a Akka cluster, that with Akka streams consuming from kafka.
+  Then they have actors computing through messages, they are first delivered to the respective "leaf" actor node for a given battery
+
+  Actors can recover state using "akka persistence", but doesn't need to, because the state is restored when it receives the message from Kafka.
+
+
+  So, Autobidder can be controlling a "node" that represents 10MW or 50MW.
+    the leafs under this node can change dynamically (new batteries, or going offline)
+    so now you send messages to "discharge set point" from the node to the children all the way to the leafs.
+    (so this is how they send commands to the leafs)
+
+  Huge aggregations demand different APIs and data-processing patterns.
+  Assett management is the hardest problem.
+  There is a tention between: central optimization and local-needs
+
+# Market-Participation of the Virtual Power Plant
+
+  So now, autobidder is using the whole tree of nodes/actors.
+
+  "People who are really serious around software need to build their hardware" - Alan Kay
+
+  So, messages to the actors and processing at the nodes to aggregate going up, or divide the order going down the tree.
+  the Autobidder talks to the root-node.
+
+  This automatically handles nodes going out, because we only have actors for alive nodes.
+  The Akka framework system looks like an AMAZING FIT for their problems.
+  There is quite probably a lot of software development to make Akka work this smoothly.
+
+  I have some pics, will try to add them.
+
