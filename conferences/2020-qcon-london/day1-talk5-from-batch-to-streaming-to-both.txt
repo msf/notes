@@ -12,7 +12,7 @@ They also have a OLAP DB, nicknamed "the cube" :-)
 They didn't wanna wait 24h for the ETL cycle to complete.
 
 # From Batch to Streaming
-they started with Kafka streams
+they started with Kafka topics
 - protobuf messages (all events in protobuf, they really recommend going with something like that)
 - we can then consume and split out into:
  - metrics to OpenTSDB/Grafana
