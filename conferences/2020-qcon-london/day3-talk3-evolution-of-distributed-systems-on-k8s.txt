@@ -1,0 +1,133 @@
+Okay, I can see I won't be able to make rich notes,
+
+    very dense slides with information
+
+    he is talking about requirements of modern systems in terms of non-functional requirements.
+
+# Monolith Applications.
+
+    traditional middleware limitations.
+
+# cloud native architectures
+    the microservices hold business domain logic
+    k8s has native framworks to check:
+     - health, metrics, logs, readiness, liveness, tracing..
+     - managed start/stop, prestart, poststop hooks
+     - declarative deployments, multiple strategies available
+     - declarative resources and automatic placement logic
+
+    it is also easy to run hybrid workloads on k8s.
+    (however the cool kids don't run stateful workloads on k8s.. even though it already supports for quite a while)
+    quoting a friend: "you wanna treat compute like cattle but data are you pets, you wanna control them very closely"
+
+.. okay, this talk is a very good introductory talk about "modern cloud-native architectures" and focussing on the abstractions
+
+  sidecar:
+  - main container, receiving requests
+  - sidecar container, used by main container for some tasks
+
+ now he's covering the controller pattern
+ default schemas, default controllers, managed stateful resources.
+ - examples of custom controllers:
+  - tracking new git-tags for production and triggering a deployment rollout.
+  - tracking changes to config-maps and triggering a deployment rollout
+  (my examples fit into what is called the operator pattern)
+
+# Service Meshes
+    - description of the idea of a service mesh
+# API Gateways
+    Abstract detauls aind decouples consumers from implementations.
+    controlers whats allowed in/out
+    bridges security domains
+    req/resp transforms
+    protocol transforms
+    ...
+
+# Serverless
+    Knative:
+        Service
+        Eventing
+    this is serverless framework for k8s
+    "scale to zero and activation"
+    Service
+        rapid autoscaling
+        traffic splitting
+        callable by knative
+
+    Eventing:
+        sources: kafka, cronjob, apache camel, ..
+        broker impls: kafak, in-mem
+        coud events data format
+        trigger with filters
+        sequence: chaninging multiple steps.
+
+    basically, this is new layer of abstraction to decouple from specific implementations and APIs.
+    this might be useful for us
+
+
+# Darp (what is Dapr?)
+    Distributed systems toolkit as a sidecar
+    building blocks:
+        - actors (logic goes here)
+        - pubsub (secure and scalable messaging between services)
+        - dist tracing
+        - state management
+        - resource bindings
+        - service invocation (reverse poroxy w/ service discovery tracing and error handling)
+
+    this looks very cool, this looks like Akka for k8s
+
+# Full circle:
+    - centralized control plane
+    - decentralized data plane
+
+    knative + istio + k8s
+    dapr + istio + k8s
+
+# Future cloud trends
+
+    Lifecycle trends
+        operator pattern is starting to become popular.
+        see operatorhub.io
+        Operator Framework, for example custom deployments for ML..
+            this is by red hat
+
+    there is a lot happening right now.
+
+
+    Networking Trends
+     Service Mesh Interface spec
+     Arch consolidations of Istio w/ istiod
+     More L7 protocols: MongoDB, DynamoDB, ZooKeeper, Mysql, redis, kafka
+        KIP-559: encryption, filtering, transforms, validation
+     http cache filter (eCache) -- a http caching proxy as a service?
+     http tap filer (w/ matches)
+     webasm filters w/ dynamic loading (C++ -> Rust, Go, etc..)
+
+
+    Binding Trends:
+      Apache Camel (camel3 is integrated into k8s)
+      this is basically "gradle" for build + deploy on k8s, in an integrated fashion
+
+
+    Cloudstate:
+        akka sidecar to your gRPC service that is the actor function
+        the akka sidecars use some data store to keep the state
+
+    Multi-runtime microservices are here:
+    dapr
+    cloudstate
+    knative
+
+    your biz-logic is poliglot and on top of a fat layer of:
+     VMs + k8s + envoy + .. + you-code-here
+
+    Smart sidecars, dump pipes
+     all interactions to the outside world are with sidecars
+
+     He calls this Mecha-architecture
+     he is making the case that faas or serverless are the wrong abstraction level
+
+     biz-logic is in a container, the scaffolding/io/IPC/distributed needs are off the shelf tech
+
+     the closest thing right now is dapr + envoy

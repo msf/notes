@@ -1,0 +1,35 @@
+This is mostly about a specific experience of a company using GitHub and marketplace to improve their CI/CD
+
+by Sonya Moisset, security engineer
+
+she's going over some attacks that are very visible to the world, wannacry, sextorsion, ashley madison, phising attacks.etc..
+
+now about databreaches..how they happen
+
+attacks through scripts that are embedded on sites, because npm/js land has so many deps.. you can target them and try to inject code there. some clueless devs will really accept github PRs that hide security trojan horses.
+
+a cool story of social engineering to gain access to npm packages hosted on github to inject malware/attacks.
+
+my note:-- the problem isn't really npm or js, it just shows there because the SIZE of the community/usage of JS is so large, so large attack surface.
+
+now about OWASP
+it publishes the top10 proactive controls
+    this is very usefull and we should track it.
+    https://owasp.org/www-project-top-ten/
+
+
+Pride London Open Source Project.
+
+they use circleci, github, github marketplace, github actions
+
+use: Gatsby, contentful, webhooks, gatsby cloud for build, netlifly, circleci, codecov,
+    .... this isn't a good talk ....
+
+this is a walk around what they use ...
+
+so, yes, I know security is a problem and I know about known attack vectros
+yes, there are lots of tools to use for a full blown application ci/cd.
+very unstructured on the type of tools and for what purpose
+
+LGTM - automated security reviews
+datree - compliance

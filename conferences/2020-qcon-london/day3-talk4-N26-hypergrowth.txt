@@ -1,0 +1,59 @@
+So, the security on CI/CD talk was very bad and I switched to this talk halfaway.
+
+
+# Releases
+  Around 500 releases per week.
+  continuous investment in Continuous Delivery
+  They have no manual checks after code is commited into master:
+   - dev deploy
+   - automated tests, perf, tc..
+     end to end tests
+     security reports
+
+   - staging deploy
+   - more tests
+   - live canary deploy
+   - more tests
+   - full prod deploy
+   all automated.
+
+  They do "blue/green" on their canary, so:
+   - take 1 node out
+   - put it back with new code
+   - run all integration tests on that node
+   - if it is successfull (and node serves traffic without errors)
+   - deploy to rest of fleet.
+
+   -- this pattern probably means their deployments have a *separate* canary deployment, that way it is easier to automate
+     all the testing and steps and moving the pipeline forward.
+
+# Reliability
+  Goal: high release rate, reduce risk
+
+  avoid incidents is by avoiding changes
+    they are unavoidable
+  so the goal is to minimize the TIME of it.
+    time to detect
+    time to diagnose
+    time to fix
+
+  Blameless postmortem culture
+   they started to routinely evaluate how many incidents they had and what systems or teams did they come from.
+   - written records
+   - incident impact
+   - actions to mitigate
+   - the root cause
+   - preventing actions
+   this was very good for knowledge sharing and documentation of our systems.
+   they also were self-aware of how the incident handling process was working.
+
+   they use the post-mortems on onboarding new engineers.
+   (this is cool)
+
+# lessons learned
+    - adjust to your journey conditions
+    - continous delivery
+    - infra as code
+    - keep availability in mind
+
+

@@ -1,0 +1,93 @@
+Kattie Gumanji
+
+This talk is about the changes in OSS to start to expose APIs and change the way they interoperate.
+
+Example:
+- Docker Swarm
+- Mesos
+- K8s
+
+K8s exposed APIs and created a whole ecosystem around it with lots of different tools popping up.
+
+This is going to be very focussed on k8s, she is a CNCF board commitee member.
+
+# Practical Past
+ - CNI
+  -- the story around here seems to be around good structure/apis and a working ecosystem --
+   Calico
+    has network policies enforcements
+   flannel
+   Cilium
+    gaining momentum
+   weaveNet
+
+ - CRI
+  This case was harder, the way the container execution was done was very intertwined into code and only a
+  specific runtime was the one used at large.
+  It was clear the need for a CRI, abstraction layer over the container runtime execution engine.
+   - containerd
+     industry standard, CNCF project
+   - cri-o
+     lightweight, roughly equivalent to containerd in features
+   - gVisor
+     from google, uses kernel syscall tracing to further isolate
+   - firecracker
+     from AWS, uses HW virtualization and creates effectivly micro-VMs with overhead of 7mb only.
+
+
+# Innovation Wave
+    SMI: service mesh interface
+        normalization of this design pattern of having:
+         infra layer to manage svc2svc traffic within a distributed environ.
+        APIS:
+            traffic policy
+            traffic telemetry
+            traffic management
+        ISTIO
+        LINKERD (incubating CNCF)
+        CONSUL
+
+    CSI: container storage interface
+        plugable interface to consume external storage
+        it is in GA since 1.13
+
+        storageos
+        rook (incubating to CNCF, also uses ceph)
+        ceph
+        OpenEBS
+
+     ClusterAPI: Cluster Provisioning, cloud agnostic
+        kubeadm
+        kubespray
+        kops
+        tectonic
+        (the image on the screen was: turtles on top of turtles)
+
+        What if you want to migrate your cluster between infra providers ?
+        Cross-cloud deployments ?
+        Tool migration ?
+        Challenges: in some regions: like China & Russia, for some reason are on the slides..
+
+        the goal: declarative APIs to declarative create, configure and manage k8s clusters.
+        the current api (in alpha: v1alpha) is supported by google cloud, aws, baidu-cloud, digital ocean, and some little others.
+
+        this needs:
+            cluster ap crds
+            bootstrap providers (like kubeadm)
+            infra providers  (aws, gke, etc..)
+            .. requires a k8s cluster to create clusters.. lol (turtles all the way down)
+
+            CIDRs for pods and services, DNS suffix
+            Machines: kubelet and control plane version
+            MachineSet: declare the Machine/Host resources, it is like a replicaSet or deamonSet
+            MachineDeployment: declare the machine/host cconfigs I guess
+
+# Emergence of Interfaces
+    Extract core binaries and by creating an interface, expose them.
+    Huge impact on vendors, users, community.
+        - space for Innovation
+        - extensibility, space for choice that best fits the user.
+        - interoperability is important for community.
+
+    CloudNative Interfaces has been key for the healthy growth of k8s.
+

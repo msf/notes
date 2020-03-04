@@ -1,0 +1,166 @@
+Some motivation:
+
+How to make security decisions ?
+Is adding security adding more complexity or chaos to your project ?
+How to add security without extra complexity ?
+
+"Designing stack agnostic, modern, secure architectures"
+
+Sounds a bit like the CAP theorem, right ?
+Pick only two ?
+
+1. Stack Agnostic
+ Architecture that is not limited to certain types of infrastructure
+
+2  Modern design approaches, address relevant risks and threat models
+
+3. Secure: .. yup
+
+Step 1:
+Understand goals of security arch. why ? what is the value ?
+..
+
+
+WHY ?
+ story about bank envrionment, with strong security, certifications, etc..
+    but they had crazy high security fraud
+ then they:
+  charged customers per request
+  void contracts for abusers
+
+  --> the managers looked at the risks and addressed the risks.
+  the fix was much simpler than more code and more security features
+
+  Another story about different security problems that got fixed at the architectural level.
+  instead of "security features" or protections suggested by the "security engineer".
+
+Why do large companies still struggle with this?
+ - Equifax
+ - JP Morgan
+ - RSA Security
+ - Operation Aurora victims: google, amazon, etc...
+
+ "Unexecpected attack vector under novel thread model adding to forces that not prepared to meet"
+
+  Humans are unpredictable
+  Technology is broken
+  Poor design decisions <-- this is the one we can have the biggest delta/control/impact.
+
+Security is many times seen negatively:
+ - negative biz value
+ - hard to execute, lots of work
+
+4 types of knowing in security:
+- confusion
+- doubt
+- fear
+- risk averse
+
+More:
+ - too many things to think about
+ - poorly systematized or modeled
+ - abscense of well communicated design principles.
+ ...
+
+ We make more mistakes about risky things under pressre in absence of simple guiding principles
+
+ The remaining 35mins are mental models for you brain to simplify the picture and make decisions easier.
+
+ decisions types/levels:
+  - managers
+  - sw eng
+  - sec engs
+  - architects
+
+  What did google do?
+  revised architecture: beyondcorp.
+
+  Goals of Sec Arch:
+  - understandable and implemented decision system
+  "we don't want a sec-policy that only 3 ppl read fully"
+
+  what is it:
+  combination of sec decisions
+    makes the ACTuAL riSKS manageable in a chosen manner.
+
+    - understand and manage risks
+    - understand and manage attack surface
+    - balance tradeoffs
+
+   before these things, anything is wasted time.
+
+   it is the same as designing for scale, you design to address risks.
+   the risks are different, but the approach is the same.
+
+   NASA way: you make your systems resilient againts the phisics/understandable issues
+   NAVY way: you have attackers and unknown attack vectors.
+
+# RISKS:
+ you need to quantify your risks, so you can manage them. otherwise: FUD
+ valuable approaches:
+  - OWASP RAF
+  - FAIR
+  - NIST RMF
+  - COBIT 5
+  - OCTAVA
+
+  risks are: probability * damage
+
+Understanding the attack surface
+ - any point that an attacker can use to cause a loss
+ attackers look for asset -> they think in graphs
+ defenders protect "boxes/services/systems" -> we think in lists/sets
+
+ to defend: everything must be right
+ to attack: one thing must be wrong.
+
+ - assess, minimize, control, monitor
+ - do DRILLS (validate monitor, control, ..and everything else is adequate)
+
+# Tradeoffs:
+ - risk impact vs cost, usability, maintainability, flexibility
+ - security controls that impact these things greatly are quite probably inefective.
+  you'll have your own team/corp/users trying to circunvent due to the impact it is having on the those attributes.
+
+
+# Designing for Security
+
+  attack surface are ALWAYS too big
+  the only thing it isn't big is your budget
+
+  story about power grid operators
+    huge limitations, legacy systems, mad scale,...
+    ... security ?
+    the sweet intersection of compliance and what the system can be "modified" or "adapted" to do.
+    the tradeoffs were thinking about how the system can expose "how" they are operating into data
+        and do monitoring and analysis of that data.
+
+    Prioritize, think about trust levels:
+     - ultimate "secure"
+     - nothing is "provably secure"
+     - raise the costs and bar of attacks
+     - control the attack flow/points
+
+# tradeoffs, conflicting requirements
+  PCI loggging requirements vs GDPR requirements
+    in some cases legal is the answer.
+
+  general issues around logging and privacy and how logging is also data.
+  no concrete requirements: infinite rabbit hole.
+  what are the logging requirements?
+
+Good architecture is both decision framework and design guide.
+it not only address risks but reduces complexity
+
+When your're focussed on RISKS and attack surface, the tech stack is never the obstacle/issue
+.. an example of "closing down" a old legacy win2k3 AD/LDAP server with: IAM + SSO + ZeroTrust w/ a tiny service in front of legacy system.
+
+# Recap
+ Security Arch is a combination of security decisions, which makes actual system's risks manageable in a chosen manner, efficientl while maintaining all other qualities.
+
+ - risk management
+ - attack surface management
+ - balance tradeoffs, remove conflicts
+
+
+
