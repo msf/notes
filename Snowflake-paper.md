@@ -1,8 +1,10 @@
 # Snowflake Paper and Architecture Review
 
-[Snowflake Paper](https://www.snowflake.com/wp-content/uploads/2019/06/Snowflake_SIGMOD.pdf)
-[Youtube Video, Andi Pavlo's Lecture](https://www.youtube.com/watch?v=bveqnSk15JQ)
-
+- [Snowflake Paper](https://www.snowflake.com/wp-content/uploads/2019/06/Snowflake_SIGMOD.pdf)
+- Andi Pavlo's lecture from spring 2023:
+  - [Youtube, Lecture](https://www.youtube.com/watch?v=bveqnSk15JQ)
+  - [Slides] (https://15721.courses.cs.cmu.edu/spring2023/slides/21-snowflake.pdf)
+    
 ## Intro
 
 Snowflake was a wilful investment decision to make a bleeding edge from scratch OLAP database built for SaaS.
@@ -17,7 +19,7 @@ Some quick highlights:
 - In C++, full control of memory, compiled code (no JVM)
 - Columnar Storage (PAX-style format)
 - Unified Query Optmizer + Adaptive planner (can change plans)
-- Pre-compiled code for fectorized operations on specific primitives (with type specialization)
+- Pre-compiled code for vectorized operations on specific primitives (with type specialization)
 - No concept of a shared cache or buffer-pool (more on this later)
 
 (Credit to Andi Pavlo's lectures on this)
@@ -133,6 +135,6 @@ The highlight of this section for me is:
 
 ### Left overs
 
-They 
+They used a bunch of pages on data 
 
 
