@@ -132,9 +132,25 @@ The highlight of this section for me is:
   if they discover data-skew or things like that.
 - they combine this w/ prunning and "alway spill-to-disk" choices wisely.
 
+### Highlights
 
-### Left overs
+(Mentioned by them)
+1. Web App seen as critical differentiator
+2. "no maintenance" approach: no indices, no tuning, no physical design (partitions..etc..), no vacuum, etc..
+3. Always Up: TL;DR: welcome to the new world, fault tolerant, but full-AZ faults are accepted tradeoff, and would impact users.
+3. Semi-Structured and Schema-Less support becoming more important, performance on "VARIANT"/OBJECT types is very good. ELT vs ETL: they mention the increasing use of Extract + Load.. and only later the "Transform" and the schema design showing up. And the support of OBJECT + procedural UDFs helping users develop ETL tasks.
+4. TimeTravel & Cloning: the usual use of MVCC for providing a way to use a historical version of the data (or un-deleting data)
+5. Data Encryption stuff, (very important for their biz, 
 
-They used a bunch of pages on data 
+### Final Remarks
+
+1. all metadata on very fast kv-storage, all pruning and statistics per data-file is present
+2. all data on S3 + very agressive/leveraged caching onto local NVMEs
+3. Capacity of a Virtual Warehouse is "bursty" aka dynamic.
+4. No indices, dynamic reallocation of resources to a plan or late-planning, file prunning, work stealing
+5. Columnar store, vectorized engine, C++,  push-based engine, the talks w/ Andi Pavlo has more details on this
+6. Signiffican work on making Documents/JSON/Object very fast by schema discovery and re-conversions
+
+They used a bunch of pages on data encryption.
 
 
